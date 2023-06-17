@@ -1,5 +1,4 @@
 // import { app } from "./app";
-import express from "express";
 import cluster from "cluster";
 import os from "os";
 
@@ -11,7 +10,7 @@ if (cluster.isPrimary){
 	for(let i = 0; i < numCPUs; i++){
 		cluster.fork();
 	}
-	cluster.on('exit', (worker, code, signal) => {
+	cluster.on('exit', () => {
 		cluster.fork();
 	})
 }else {
