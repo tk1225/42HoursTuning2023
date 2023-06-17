@@ -10,3 +10,4 @@ CREATE INDEX idx_match_group_id ON match_group_member (match_group_id);
 CREATE INDEX idx_department_id ON department_role_member (department_id);
 CREATE INDEX idx_role_id ON department_role_member (role_id);
 CREATE INDEX idx_user_id ON department_role_member (user_id);
+CREATE INDEX idx_linked_user_id ON session (linked_user_id);
