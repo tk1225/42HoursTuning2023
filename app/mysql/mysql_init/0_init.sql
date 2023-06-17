@@ -11,7 +11,7 @@ CREATE TABLE `user` (
     `office_id` VARCHAR(36) NOT NULL,
     `user_icon_id` VARCHAR(36) NOT NULL,
     `goal` VARCHAR(1024) NOT NULL,
-    PRIMARY KEY (`user_id`),
+    PRIMARY KEY (`user_id`)
 );
 
 CREATE TABLE `session` (
@@ -84,8 +84,3 @@ CREATE TABLE `match_group_member` (
     `user_id` VARCHAR(36) NOT NULL,
     PRIMARY KEY (`match_group_id`, `user_id`)
 );
-
-CREATE INDEX idx_user_id ON user (user_id);
-CREATE INDEX idx_employee_id ON user (employee_id);
-CREATE INDEX idx_mail ON user (mail);
-CREATE INDEX idx_office_id ON user (office_id);
