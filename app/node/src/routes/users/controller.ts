@@ -1,12 +1,24 @@
 import express from "express";
-import { execSync } from "child_process";
 import { getUsers } from "./repository";
 import { getUserByUserId } from "./repository";
 import { getFileByFileId } from "../files/repository";
 import { SearchedUser, Target, User } from "../../model/types";
 import { getUsersByKeyword } from "./usecase";
+import fs from 'fs';
 
 export const usersRouter = express.Router();
+
+async function getImageData(imagePath: string): Promise<Buffer> {
+  return new Promise<Buffer>((resolve, reject) => {
+    fs.readFile(imagePath, (error, data) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+}
 
 // ユーザーアイコン画像取得API
 usersRouter.get(
@@ -29,14 +41,20 @@ usersRouter.get(
         return;
       }
       const path = userIcon.path;
-      // 500px x 500pxでリサイズ
-      const data = execSync(`convert ${path} -resize 500x500! PNG:-`, {
-        shell: "/bin/bash",
-      });
-      res.status(200).json({
-        fileName: userIcon.fileName,
-        data: data.toString("base64"),
-      });
+
+      getImageData(path)
+        .then((data) => {
+          // imageData に取得した画像データが格納されています
+          res.status(200).json({
+            fileName: userIcon.fileName,
+            data: data.toString("base64"),
+          });
+          console.log('画像データを取得しました。');
+        })
+        .catch((error) => {
+          console.error('画像データの取得中にエラーが発生しました:', error);
+        });
+      
       console.log("successfully get user icon");
     } catch (e) {
       next(e);
