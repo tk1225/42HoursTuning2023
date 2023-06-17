@@ -74,6 +74,9 @@ export const getUserByUserId = async (
 export const getUsersByUserIds = async (
   userIds: string[]
 ): Promise<SearchedUser[]> => {
+  if (userIds.length === 0) {
+    return [];
+  }
   const userIdsString = userIds.join(', ');
 
   const query = `
@@ -91,34 +94,6 @@ export const getUsersByUserIds = async (
   return convertToSearchedUser(rows);
 };
 
-export const getUsersByUserIds_tmp = async (
-  userIds: string[]
-): Promise<SearchedUser[]> => {
-  let users: SearchedUser[] = [];
-  for (const userId of userIds) {
-    const [userRows] = await pool.query<RowDataPacket[]>(
-      "SELECT user_id, user_name, kana, entry_date, office_id, user_icon_id FROM user WHERE user_id = ?",
-      [userId]
-    );
-    if (userRows.length === 0) {
-      continue;
-    }
-
-    const [officeRows] = await pool.query<RowDataPacket[]>(
-      `SELECT office_name FROM office WHERE office_id = ?`,
-      [userRows[0].office_id]
-    );
-    const [fileRows] = await pool.query<RowDataPacket[]>(
-      `SELECT file_name FROM file WHERE file_id = ?`,
-      [userRows[0].user_icon_id]
-    );
-    userRows[0].office_name = officeRows[0].office_name;
-    userRows[0].file_name = fileRows[0].file_name;
-
-    users = users.concat(convertToSearchedUser(userRows));
-  }
-  return users;
-};
 
 export const getUsersByUserName = async (
   userName: string
@@ -128,8 +103,7 @@ export const getUsersByUserName = async (
     [`%${userName}%`]
   );
   const userIds: string[] = rows.map((row) => row.user_id);
-
-  return getUsersByUserIds_tmp(userIds);
+  return getUsersByUserIds(userIds);
 };
 
 export const getUsersByKana = async (kana: string): Promise<SearchedUser[]> => {
@@ -138,8 +112,7 @@ export const getUsersByKana = async (kana: string): Promise<SearchedUser[]> => {
     [`%${kana}%`]
   );
   const userIds: string[] = rows.map((row) => row.user_id);
-
-  return getUsersByUserIds_tmp(userIds);
+  return getUsersByUserIds(userIds);
 };
 
 export const getUsersByMail = async (mail: string): Promise<SearchedUser[]> => {
@@ -148,8 +121,7 @@ export const getUsersByMail = async (mail: string): Promise<SearchedUser[]> => {
     [`%${mail}%`]
   );
   const userIds: string[] = rows.map((row) => row.user_id);
-
-  return getUsersByUserIds_tmp(userIds);
+  return getUsersByUserIds(userIds);
 };
 
 export const getUsersByDepartmentName = async (
@@ -172,7 +144,7 @@ export const getUsersByDepartmentName = async (
   );
   const userIds: string[] = userIdRows.map((row) => row.user_id);
 
-  return getUsersByUserIds_tmp(userIds);
+  return getUsersByUserIds(userIds);
 };
 
 export const getUsersByRoleName = async (
@@ -214,7 +186,7 @@ export const getUsersByOfficeName = async (
   );
   const userIds: string[] = userIdRows.map((row) => row.user_id);
 
-  return getUsersByUserIds_tmp(userIds);
+  return getUsersByUserIds(userIds);
 };
 
 export const getUsersBySkillName = async (
@@ -235,7 +207,7 @@ export const getUsersBySkillName = async (
   );
   const userIds: string[] = userIdRows.map((row) => row.user_id);
 
-  return getUsersByUserIds_tmp(userIds);
+  return getUsersByUserIds(userIds);
 };
 
 export const getUsersByGoal = async (goal: string): Promise<SearchedUser[]> => {
@@ -245,7 +217,7 @@ export const getUsersByGoal = async (goal: string): Promise<SearchedUser[]> => {
   );
   const userIds: string[] = rows.map((row) => row.user_id);
 
-  return getUsersByUserIds_tmp(userIds);
+  return getUsersByUserIds(userIds);
 };
 
 export const getUserForFilter = async (
