@@ -12,8 +12,6 @@ CREATE TABLE `user` (
     `user_icon_id` VARCHAR(36) NOT NULL,
     `goal` VARCHAR(1024) NOT NULL,
     PRIMARY KEY (`user_id`),
-    INDEX `mail_index` (`mail`),
-    INDEX `password_index` (`password`)
 );
 
 CREATE TABLE `session` (
@@ -27,8 +25,7 @@ CREATE TABLE `department` (
     `department_id` VARCHAR(36) NOT NULL,
     `department_name` VARCHAR(50) NOT NULL,
     `active` TINYINT(1) NOT NULL DEFAULT '1',
-    PRIMARY KEY (`department_id`),
-    INDEX `department_name_index` (`department_name`)
+    PRIMARY KEY (`department_id`)
 );
 
 CREATE TABLE `role` (
@@ -44,8 +41,7 @@ CREATE TABLE `department_role_member` (
     `user_id` VARCHAR(36) NOT NULL,
     `entry_date` DATE NOT NULL,
     `belong` TINYINT(1) NOT NULL DEFAULT '1',
-    PRIMARY KEY (`department_id`, `role_id`, `user_id`, `entry_date`),
-    INDEX `user_id_index` (`user_id`)
+    PRIMARY KEY (`department_id`, `role_id`, `user_id`, `entry_date`)
 );
 
 CREATE TABLE `office` (
@@ -88,3 +84,8 @@ CREATE TABLE `match_group_member` (
     `user_id` VARCHAR(36) NOT NULL,
     PRIMARY KEY (`match_group_id`, `user_id`)
 );
+
+CREATE INDEX idx_user_id ON user (user_id);
+CREATE INDEX idx_employee_id ON user (employee_id);
+CREATE INDEX idx_mail ON user (mail);
+CREATE INDEX idx_office_id ON user (office_id);
