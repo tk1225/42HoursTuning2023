@@ -74,6 +74,26 @@ export const getUserByUserId = async (
 export const getUsersByUserIds = async (
   userIds: string[]
 ): Promise<SearchedUser[]> => {
+  const userIdsString = userIds.join(', ');
+
+  const query = `
+    SELECT
+      u.user_id, u.user_name, u.kana, u.entry_date,
+      u.office_id, u.user_icon_id, o.office_name, f.file_name
+    FROM user u
+    JOIN office o ON u.office_id = o.office_id
+    JOIN file f ON u.user_icon_id = f.file_id
+    WHERE u.user_id IN (${userIdsString})
+  `;
+
+  const [rows] = await pool.query<RowDataPacket[]>(query);
+
+  return convertToSearchedUser(rows);
+};
+
+export const getUsersByUserIds_tmp = async (
+  userIds: string[]
+): Promise<SearchedUser[]> => {
   let users: SearchedUser[] = [];
   for (const userId of userIds) {
     const [userRows] = await pool.query<RowDataPacket[]>(
@@ -109,7 +129,7 @@ export const getUsersByUserName = async (
   );
   const userIds: string[] = rows.map((row) => row.user_id);
 
-  return getUsersByUserIds(userIds);
+  return getUsersByUserIds_tmp(userIds);
 };
 
 export const getUsersByKana = async (kana: string): Promise<SearchedUser[]> => {
@@ -119,7 +139,7 @@ export const getUsersByKana = async (kana: string): Promise<SearchedUser[]> => {
   );
   const userIds: string[] = rows.map((row) => row.user_id);
 
-  return getUsersByUserIds(userIds);
+  return getUsersByUserIds_tmp(userIds);
 };
 
 export const getUsersByMail = async (mail: string): Promise<SearchedUser[]> => {
@@ -129,7 +149,7 @@ export const getUsersByMail = async (mail: string): Promise<SearchedUser[]> => {
   );
   const userIds: string[] = rows.map((row) => row.user_id);
 
-  return getUsersByUserIds(userIds);
+  return getUsersByUserIds_tmp(userIds);
 };
 
 export const getUsersByDepartmentName = async (
@@ -152,7 +172,7 @@ export const getUsersByDepartmentName = async (
   );
   const userIds: string[] = userIdRows.map((row) => row.user_id);
 
-  return getUsersByUserIds(userIds);
+  return getUsersByUserIds_tmp(userIds);
 };
 
 export const getUsersByRoleName = async (
@@ -194,7 +214,7 @@ export const getUsersByOfficeName = async (
   );
   const userIds: string[] = userIdRows.map((row) => row.user_id);
 
-  return getUsersByUserIds(userIds);
+  return getUsersByUserIds_tmp(userIds);
 };
 
 export const getUsersBySkillName = async (
@@ -215,7 +235,7 @@ export const getUsersBySkillName = async (
   );
   const userIds: string[] = userIdRows.map((row) => row.user_id);
 
-  return getUsersByUserIds(userIds);
+  return getUsersByUserIds_tmp(userIds);
 };
 
 export const getUsersByGoal = async (goal: string): Promise<SearchedUser[]> => {
@@ -225,7 +245,7 @@ export const getUsersByGoal = async (goal: string): Promise<SearchedUser[]> => {
   );
   const userIds: string[] = rows.map((row) => row.user_id);
 
-  return getUsersByUserIds(userIds);
+  return getUsersByUserIds_tmp(userIds);
 };
 
 export const getUserForFilter = async (
