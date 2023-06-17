@@ -7,6 +7,9 @@ const numCPUs = os.cpus().length;
 if(cluster.isPrimary) {
 	for(let i = 0; i < numCPUs; i++){
 		cluster.fork();
+		cluster.on('exit', (worker, code, signal) => {
+			cluster.fork();
+		});
 	}
 }else{
 app.listen(port, () => {
