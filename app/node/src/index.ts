@@ -15,8 +15,8 @@ if (cluster.isPrimary){
 		cluster.fork();
 	})
 }else {
-	import("./app").then((app: express.Express) => {
-		app.listen(port, () => {
+	import("./app").then((modData) => {
+		modData.app.listen(port, () => {
 			console.log(`ポート${port}番で起動しました。`);
 		})
 }).catch((error) => {
