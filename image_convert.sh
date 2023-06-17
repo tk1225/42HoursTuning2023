@@ -17,7 +17,7 @@ do
     output_path="${output_directory}/${file_name[i]}"  # 出力ファイルのパス
 
     # convert "$input_path" -strip -resize "${resize_width}x${resize_height}" -dither None -posterize 8 -colors 256 "$output_path"
-    convert "$input_path" -strip -resize "${resize_width}x${resize_height}" -dither None -posterize 4 -colors 4 -depth 4 "$output_path"
+    convert "$input_path" -strip -resize "${resize_width}x${resize_height}"! -dither None -posterize 4 -colors 4 -depth 4 "$output_path"
 
 
 done
