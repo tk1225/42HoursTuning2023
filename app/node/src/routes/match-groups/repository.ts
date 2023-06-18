@@ -3,6 +3,7 @@ import pool from "../../util/mysql";
 import { MatchGroup, MatchGroupDetail, User } from "../../model/types";
 import { getUsersByUserIds } from "../users/repository";
 import { convertToMatchGroupDetail } from "../../model/utils";
+import { matchGroupRouter } from "./controller";
 
 export const hasSkillNameRecord = async (
   skillName: string
@@ -17,18 +18,22 @@ export const hasSkillNameRecord = async (
 export const getUserIdsBeforeMatched = async (
   userId: string
 ): Promise<string[]> => {
-  const [matchGroupIdRows] = await pool.query<RowDataPacket[]>(
-    "SELECT match_group_id FROM match_group_member WHERE user_id = ?",
-    [userId]
-  );
-  if (matchGroupIdRows.length === 0) {
-    return [];
-  }
+  // const [matchGroupIdRows] = await pool.query<RowDataPacket[]>(
+  //   "SELECT match_group_id FROM match_group_member WHERE user_id = ?",
+  //   [userId]
+  // );
+  // if (matchGroupIdRows.length === 0) {
+  //   return [];
+  // }
 
   const [userIdRows] = await pool.query<RowDataPacket[]>(
-    "SELECT user_id FROM match_group_member WHERE match_group_id IN (?)",
-    [matchGroupIdRows]
+    "SELECT user_id FROM match_group_member WHERE match_group_id IN (SELECT match_group_id FROM match_group_member WHERE user_id = ?)",
+    [userId]
   );
+
+	if (userIdRows.length === 0) {
+		return [];
+	}
 
   return userIdRows.map((row) => row.user_id);
 };
