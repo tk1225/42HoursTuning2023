@@ -1,5 +1,5 @@
 import express from "express";
-import { execSync } from "child_process";
+import crypto from "crypto";
 import { v4 as uuidv4 } from "uuid";
 import { getUserIdByMailAndPassword } from "../users/repository";
 import {
@@ -11,7 +11,6 @@ import {
 
 export const sessionRouter = express.Router();
 
-// ログインAPI
 sessionRouter.post(
   "/",
   async (
@@ -33,11 +32,11 @@ sessionRouter.post(
     }
 
     const { mail, password }: { mail: string; password: string } = req.body;
-
-    const hashPassword = execSync(
-      `echo -n ${password} | shasum -a 256 | awk '{printf $1}'`,
-      { shell: "/bin/bash" }
-    ).toString();
+    
+    // change bash to crypto library
+    const hash = crypto.createHash('sha256');
+    hash.update(password);
+    const hashPassword = hash.digest('hex');
 
     try {
       const userId = await getUserIdByMailAndPassword(mail, hashPassword);
@@ -49,8 +48,8 @@ sessionRouter.post(
         return;
       }
 
-      const session = await getSessionByUserId(userId);
-      if (session !== undefined) {
+      let session = await getSessionByUserId(userId);
+      if (session) {
         res.cookie("SESSION_ID", session.sessionId, {
           httpOnly: true,
           path: "/",
@@ -62,8 +61,8 @@ sessionRouter.post(
 
       const sessionId = uuidv4();
       await createSession(sessionId, userId, new Date());
-      const createdSession = await getSessionBySessionId(sessionId);
-      if (!createdSession) {
+      session = await getSessionBySessionId(sessionId);
+      if (!session) {
         res.status(500).json({
           message: "ログインに失敗しました。",
         });
@@ -71,11 +70,11 @@ sessionRouter.post(
         return;
       }
 
-      res.cookie("SESSION_ID", createdSession.sessionId, {
+      res.cookie("SESSION_ID", sessionId, {
         httpOnly: true,
         path: "/",
       });
-      res.status(201).json(createdSession);
+      res.status(201).json(session);
       console.log("successfully logged in");
     } catch (e) {
       next(e);
@@ -83,7 +82,6 @@ sessionRouter.post(
   }
 );
 
-// ログアウトAPI
 sessionRouter.delete(
   "/",
   async (
