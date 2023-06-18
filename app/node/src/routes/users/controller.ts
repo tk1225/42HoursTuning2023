@@ -8,12 +8,19 @@ import fs from 'fs';
 
 export const usersRouter = express.Router();
 
+const imageCache = new Map();
+
 async function getImageData(imagePath: string): Promise<Buffer> {
+  if (imageCache.has(imagePath)) {
+    return Promise.resolve(imageCache.get(imagePath));
+  }
+  
   return new Promise<Buffer>((resolve, reject) => {
     fs.readFile(imagePath, (error, data) => {
       if (error) {
         reject(error);
       } else {
+        imageCache.set(imagePath, data);
         resolve(data);
       }
     });
