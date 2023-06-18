@@ -19,9 +19,10 @@ do
     # convert "$input_path" -strip -resize "${resize_width}x${resize_height}" -dither None -posterize 8 -colors 256 "$output_path"
     convert "$input_path" -strip -resize "${resize_width}x${resize_height}"! -dither None -posterize 8 -colors 4 -depth 4 "$output_path"
 
-
 done
 
-#     convert "images/user-icon/origin_img/pig.png" -strip -resize "${resize_width}x${resize_height}" -dither None -posterize 4 -colors 16 -depth 4 "images/user-icon/pig.png"
-#     convert "images/user-icon/origin_img/rat.png" -strip -resize "${resize_width}x${resize_height}" -dither None -posterize 4 -colors 16 -depth 16 "images/user-icon/rat.png"
-#     convert "images/user-icon/origin_img/snake.png" -strip -resize "${resize_width}x${resize_height}" -dither None -posterize 4 -colors 8 -depth 4 "images/user-icon/snake.png"
+convert "images/user-icon/origin_img/pig.png" -strip -resize "${resize_width}x${resize_height}"! -dither None -posterize 16 -colors 16 -depth 4 "images/user-icon/pig.png"
+convert "images/user-icon/origin_img/snake.png" -strip -resize "${resize_width}x${resize_height}"! -dither None -posterize 16 -colors 16 -depth 4 "images/user-icon/snake.png"
+convert "images/user-icon/origin_img/rat.png" -strip -resize "${resize_width}x${resize_height}"! -dither None -posterize 16 -colors 16 -depth 4 "images/user-icon/rat.png"
+convert "images/user-icon/origin_img/goat.png" -strip -resize "${resize_width}x${resize_height}"! -dither None -posterize 16 -colors 8 -depth 4 "images/user-icon/goat.png"
+
